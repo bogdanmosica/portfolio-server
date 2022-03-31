@@ -1,24 +1,36 @@
+/* eslint-disable comma-dangle */
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-const {
-    EMAIL_SMTP,
-    NODE_ENV,
-    EMAIL_FROM,
-} = process.env;
+const { EMAIL_SMTP, NODE_ENV, EMAIL_FROM } = process.env;
 
-const transport = nodemailer.createTransport(EMAIL_SMTP);
+const transport = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'subhrajyoti@gmai.com',
+        pass: '***********',
+    },
+});
 
 if (NODE_ENV !== 'test') {
     transport
         .verify()
-        .then(() => { return console.warn('Connected to email server'); })
-        .catch(() => { return console.error('Unable to connect to email server. Make sure you have configured the SMTP options in .env'); });
+        .then(() => {
+            return console.warn('Connected to email server');
+        })
+        .catch(() => {
+            return console.error(
+                'Unable to connect to email server. Make sure you have configured the SMTP options in .env'
+            );
+        });
 }
 
 const sendEmail = async (to, subject, text) => {
     const msg = {
-        from: EMAIL_FROM, to, subject, text,
+        from: EMAIL_FROM,
+        to,
+        subject,
+        text,
     };
     await transport.sendMail(msg);
 };
